@@ -1,1 +1,15 @@
-# google-github-actions-ssh-compute
+# google-github-actions/ssh-compute
+
+Use this action to connect to Google Cloud Platform instances via ssh and execute user's commands.
+
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/google-github-actions/ssh-compute](https://github.com/google-github-actions/ssh-compute).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v2.0.0 | [`v2.0.0`](https://github.com/chainguard-actions/google-github-actions-ssh-compute/tree/v2.0.0) | [`907d824`](https://github.com/google-github-actions/ssh-compute/commit/907d824cb3cb1630ddd72c032f8c64be474b4117) |
+
+## Privacy
+
+This Action contacts Chainguard's licensing server to verify authorization. Connection metadata (IP address, GitHub repository identifier, timestamp, and any metadata encoded in the auth token) is transmitted to Chainguard, Inc. even if authorization is denied in accordance with our [Privacy Notice](https://www.chainguard.dev/legal/privacy-notice)
