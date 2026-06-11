@@ -1,0 +1,57 @@
+{
+  "name": "ssh-compute",
+  "version": "2.0.0",
+  "description": "Github Action: Connect to GCP instances via SSH",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -rf dist/ && ncc build -m src/main.ts -o dist/main && ncc build -m src/post.ts -o dist/post",
+    "lint": "eslint .",
+    "format": "eslint . --fix",
+    "test": "node --require ts-node/register --test-reporter spec --test tests/**/*.test.ts"
+  },
+  "engines": {
+    "node": ">= 24.x",
+    "npm": ">= 11.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/google-github-actions/ssh-compute.git"
+  },
+  "keywords": [
+    "actions",
+    "google",
+    "ssh compute",
+    "compute",
+    "ssh"
+  ],
+  "author": "Google LLC",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/google-github-actions/ssh-compute/issues"
+  },
+  "homepage": "https://github.com/google-github-actions/ssh-compute#readme",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/tool-cache": "^2.0.2",
+    "@google-github-actions/actions-utils": "^1.0.1",
+    "@google-github-actions/setup-cloud-sdk": "^2.0.0",
+    "sshpk": "^1.18.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.34.0",
+    "@types/node": "^24.3.0",
+    "@types/sshpk": "^1.17.4",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@vercel/ncc": "^0.38.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint": "^9.34.0",
+    "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
+    "typescript-eslint": "^8.42.0",
+    "typescript": "^5.9.2"
+  }
+}
