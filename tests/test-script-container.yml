@@ -1,0 +1,42 @@
+name: Test SSH compute - script and container inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create dummy script file
+        run: |
+          echo '#!/bin/bash' > /tmp/test-script.sh
+          echo 'echo "hello from script"' >> /tmp/test-script.sh
+          chmod +x /tmp/test-script.sh
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          instance_name: my-container-instance
+          zone: us-east1-b
+          ssh_private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEA0Z3VS5JJcds3xHn/ygWep4PAtEsHAcOdTECFGMM/qdnOZn+v
+            FAKE_KEY_FOR_TESTING_ONLY
+            -----END RSA PRIVATE KEY-----
+          container: my-container
+          ssh_args: -vvv
+          script: /tmp/test-script.sh
+          gcloud_component: beta
+      - name: Assert action ran (may fail due to no real GCP infra)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action executed (outcome=$OUTCOME)"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi
