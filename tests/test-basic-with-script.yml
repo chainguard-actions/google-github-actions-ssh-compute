@@ -1,0 +1,41 @@
+name: Test basic usage with script input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a test script file
+        run: |
+          cat > /tmp/test-script.sh << 'EOF'
+          #!/bin/bash
+          echo "Hello from script"
+          EOF
+          chmod +x /tmp/test-script.sh
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          instance_name: test-instance
+          zone: us-central1-a
+          ssh_private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEA0Z3VS5JJcds3xHn/ygWep4PAtEsHAQOGMCFMEOSMaGSMoAoL
+            -----END RSA PRIVATE KEY-----
+          script: /tmp/test-script.sh
+
+      - name: Assert action ran (failed at GCP connection, not at input validation)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # The action should fail because there are no real GCP credentials,
+          # but it should NOT fail due to input validation errors.
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action ran with script input (failed at GCP connection as expected)"

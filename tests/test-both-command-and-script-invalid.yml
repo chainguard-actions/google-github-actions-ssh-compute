@@ -1,0 +1,35 @@
+name: Test both command and script is invalid
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create dummy script file
+        run: echo '#!/bin/bash' > /tmp/test-script.sh
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          instance_name: test-instance
+          zone: us-central1-a
+          ssh_private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEA0Z3VS5JJcds3xHn/ygWep4PAtEsHAQOGMCFMEOSMaGSMoAoL
+            -----END RSA PRIVATE KEY-----
+          command: echo hello
+          script: /tmp/test-script.sh
+
+      - name: Assert action failed due to invalid inputs
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when both command and script are provided"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when both command and script were provided"

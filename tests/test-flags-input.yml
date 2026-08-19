@@ -1,0 +1,39 @@
+name: Test flags input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run action with flags input (expect failure due to no real GCP)
+        id: action
+        uses: .
+        continue-on-error: true
+        with:
+          instance_name: fake-instance
+          zone: us-central1-a
+          user: testuser
+          ssh_private_key: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            b3BlbnNzaC1rZXktdjEAAAAA
+            -----END OPENSSH PRIVATE KEY-----
+          command: echo hello
+          project_id: fake-project-12345
+          flags: '--strict-host-key-checking=no'
+
+      - name: Assert action failed (not skipped) with flags set
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          if [ "$OUTCOME" = "success" ]; then
+            echo "FAIL: expected action to fail with fake credentials but it succeeded"
+            exit 1
+          fi
+          echo "PASS: action correctly failed (not skipped) when flags is set"
