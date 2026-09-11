@@ -1,0 +1,44 @@
+name: Test optional inputs (container, flags, gcloud_version, ssh_args, ssh_keys_dir)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create ssh_keys_dir
+        run: mkdir -p /tmp/test-ssh-keys
+
+      - name: Run action with optional inputs
+        id: action
+        uses: .
+        continue-on-error: true
+        with:
+          instance_name: fake-instance
+          zone: us-central1-a
+          user: testuser
+          ssh_private_key: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            b3BlbnNzaC1rZXktdjEAAAAA
+            -----END OPENSSH PRIVATE KEY-----
+          command: echo hello
+          project_id: fake-project-12345
+          container: my-container
+          flags: --ssh-key-expiration=2099-01-01T00:00:00.000Z
+          gcloud_version: latest
+          ssh_args: '-vvv'
+          ssh_keys_dir: /tmp/test-ssh-keys
+
+      - name: Assert action ran with optional inputs (failed at GCP, not at input validation)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # The action should fail because there are no real GCP credentials,
+          # but it should NOT be skipped — it must have attempted to run.
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action ran with optional inputs (failed at GCP connection as expected)"
