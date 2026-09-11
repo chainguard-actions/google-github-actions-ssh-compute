@@ -1,0 +1,39 @@
+name: Test optional inputs (user, ssh_keys_dir, ssh_args, project_id, flags, gcloud_version, container)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run action with optional inputs (expect failure without real GCP credentials)
+        id: action
+        uses: .
+        with:
+          instance_name: test-instance
+          zone: us-central1-a
+          user: testuser
+          ssh_private_key: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            b3BlbnNzaC1rZXktdjEAAAAA
+            -----END OPENSSH PRIVATE KEY-----
+          ssh_keys_dir: /tmp/ssh-keys-test
+          container: my-container
+          ssh_args: '-o StrictHostKeyChecking=no'
+          command: echo hello
+          project_id: my-test-project
+          flags: '--ssh-key-expiration=2099-01-01T00:00:00.000Z'
+          gcloud_version: latest
+        continue-on-error: true
+
+      - name: Assert action failed gracefully (no real GCP credentials or instance)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail without real GCP credentials/instance, but got outcome=$OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when optional inputs were provided but no real GCP environment exists"
