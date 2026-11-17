@@ -4,8 +4,13 @@
   "version": "v1.1.4",
   "commit_sha": "5e25530b4210e3da1e96ef919280af3bd7e88bf6",
   "url": "https://github.com/google-github-actions/ssh-compute",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/google-github-actions/ssh-compute/v1.1.4/sha256-424614d356791da02abda9c77406be12641e63ad99631e0dea3c6fb5716c3880.tar.gz",
+    "sha256": "424614d356791da02abda9c77406be12641e63ad99631e0dea3c6fb5716c3880",
+    "size_bytes": 781435
+  }
 }
